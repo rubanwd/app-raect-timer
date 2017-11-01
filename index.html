@@ -6,6 +6,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <style>
+        .clock {
+            font-size: 140px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div id='mount-point'></div>
@@ -14,27 +20,57 @@
         var Timer = React.createClass({
             getInitialState: function() {
                 return {
-                    seconds: 0
+                    seconds: 0,
+                    isPaused: false
                 };
+            },
+
+            getSeconds: function() {
+                return ('0' + this.state.seconds % 60).slice(-2);
+            },
+
+            getMinutes: function() {
+                var minutes = Math.floor(this.state.seconds / 60);
+                return String('0' + minutes).slice(-2);
+            },
+
+            tick: function() {
+                if (!this.state.isPaused) {
+                    this.setState({ seconds: this.state.seconds + 1 });
+                }
+            },
+
+            clearTimer: function() {
+                this.setState({ seconds: 0 });
+            },
+
+            pauseTimer: function() {
+                this.setState({ isPaused: !this.state.isPaused });
+                console.log('message', this.state.isPaused );
+            },
+
+            render: function() {
+                return (
+                    <div>
+                        
+                        <a href="#" onClick={this.pauseTimer}>{ !this.state.isPaused ? <img src="pause.png" /> : <img src="play.png" />}</a>
+
+                        <span className="clock"> {this.getMinutes()}:{this.getSeconds()} </span>
+                        
+                        <a href="#" onClick={this.clearTimer}><img src="clear.png" /></a>
+
+                    </div>
+                );
             },
 
             componentDidMount: function() {
                 this.timer = setInterval(this.tick, 1000);
             },
 
-            tick: function() {
-                this.setState({ seconds: this.state.seconds + 1 });
-            },
-
             componentWillUnmount: function() {
                 clearInterval(this.timer);
-            },
-
-            render: function() {
-                return (
-                    <h4> Уже прошло {this.state.seconds} секунд </h4>
-                );
             }
+
         });
 
         ReactDOM.render(
